@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coach Memory — Three Design Comparison</title>
+<style>
+  :root {
+    --text: #1f2328;
+    --muted: #6b7280;
+    --border: #d0d7de;
+    --bg-soft: #f6f8fa;
+    --bg-code: #f6f8fa;
+    --accent-1: #1f6feb;
+    --accent-2: #8250df;
+    --accent-3: #2da44e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    max-width: 1500px;
+    margin: 40px auto;
+    padding: 0 24px;
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  h1 {
+    font-size: 26px;
+    margin-bottom: 4px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 28px;
+  }
+  .intro {
+    background: var(--bg-soft);
+    border-left: 4px solid var(--accent-1);
+    padding: 14px 18px;
+    margin: 0 0 28px;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .col {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 18px 16px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .col.c1 { border-top: 4px solid var(--accent-1); }
+  .col.c2 { border-top: 4px solid var(--accent-2); }
+  .col.c3 { border-top: 4px solid var(--accent-3); }
+  .col-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+  }
+  .col.c1 .col-tag { background: var(--accent-1); }
+  .col.c2 .col-tag { background: var(--accent-2); }
+  .col.c3 .col-tag { background: var(--accent-3); }
+  .col h2 {
+    margin: 0 0 6px;
+    font-size: 16px;
+  }
+  .col .lead {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 14px;
+    line-height: 1.45;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin: 14px 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  pre, code {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+  }
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-x: auto;
+    margin: 6px 0 8px;
+  }
+  code.inline {
+    background: var(--bg-code);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 12.5px;
+  }
+  .col p {
+    margin: 6px 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .col ul {
+    margin: 6px 0;
+    padding-left: 18px;
+    font-size: 13.5px;
+  }
+  .col li { margin: 3px 0; }
+  .write-note {
+    background: #fff8c5;
+    border-left: 3px solid #bf8700;
+    padding: 8px 10px;
+    border-radius: 0 4px 4px 0;
+    margin: 8px 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .table-name {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-weight: 700;
+    font-size: 12.5px;
+    margin: 8px 0 2px;
+  }
+  hr.softrule {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 16px 0 8px;
+  }
+  .footer-note {
+    margin-top: 32px;
+    padding: 16px 20px;
+    background: var(--bg-soft);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .footer-note h3 {
+    margin-top: 0;
+    font-size: 15px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Coach Memory — Three Design Comparison</h1>
+<div class="meta">April Xu  ·  May 14, 2026  ·  Side-by-side view of Coach v2, Coach reshaped on Jarvis pattern, and Jarvis</div>
+
+<div class="intro">
+  This compares three live designs side by side: my current Coach v2 (typed tables), Coach reshaped to share three-table pattern (so Coach and Jarvis can run on shared infrastructure), and the actual Jarvis schema. The middle column shows what Coach v2 looks like if we collapse its typed tables into a memory / entity / mapping shape — same information, Jarvis-compatible structure.
+</div>
+
+<div class="grid">
+
+  <!-- =================== COLUMN 1 — COACH V2 =================== -->
+  <div class="col c1">
+    <span class="col-tag">Design 1</span>
+    <h2>Coach v2 — typed tables</h2>
+    <p class="lead">6 entity tables, 3 join tables. Each memory or entity type has its own schema. Mixed write semantics.</p>
+
+    <div class="section-label">Entity tables</div>
+
+    <div class="table-name">Coach_user</div>
+<pre>user_id        uuid PK
+user_profile   jsonb
+version        int
+updated_at     timestamp
+-- update: rewrite</pre>
+
+    <div class="table-name">Coach_meeting_summary</div>
+<pre>convo_id          uuid PK, FK→transcript
+user_id           uuid FK
+meeting_summary   jsonb  -- {summary, action_items,
+                         --  meeting_type, user_role}
+created_at        timestamp
+-- update: append-only</pre>
+
+    <div class="table-name">Coach_projects</div>
+<pre>proj_id          uuid PK
+user_id          uuid FK
+name             text
+aliases          text[]
+details          jsonb
+confidence       text
+first_mentioned  timestamp
+last_mentioned   timestamp
+-- update: upsert</pre>
+
+    <div class="table-name">Coach_people</div>
+<pre>person_id        uuid PK
+user_id          uuid FK
+name             text
+aliases          text[]
+details          jsonb
+confidence       text
+first_mentioned  timestamp
+last_mentioned   timestamp
+-- update: upsert</pre>
+
+    <div class="table-name">Coach_single_meeting_post_feedback</div>
+<pre>convo_id    uuid PK, FK
+user_id     uuid FK
+feedback    jsonb
+created_at  timestamp
+-- update: append-only</pre>
+
+    <div class="table-name">Coach_pattern</div>
+<pre>pattern_id      uuid PK
+user_id         uuid FK
+pattern         jsonb
+first_observed  timestamp
+last_observed   timestamp
+-- update: upsert</pre>
+
+    <div class="section-label">Join tables</div>
+
+    <div class="table-name">Coach_summary_projects</div>
+<pre>convo_id  uuid FK
+proj_id   uuid FK
+-- composite PK</pre>
+
+    <div class="table-name">Coach_summary_people</div>
+<pre>convo_id   uuid FK
+person_id  uuid FK
+-- composite PK</pre>
+
+    <div class="table-name">Coach_pattern_summaries</div>
+<pre>pattern_id  uuid FK
+convo_id    uuid FK
+-- composite PK</pre>
+
+    <div class="section-label">Write semantics</div>
+    <ul>
+      <li><strong>Append-only:</strong> meeting summaries, post-feedback</li>
+      <li><strong>Upsert:</strong> projects, people, patterns</li>
+      <li><strong>Rewrite:</strong> user profile</li>
+    </ul>
+
+    <div class="section-label">Dedup</div>
+    <p>Weekly per-table dedup pass: low-confidence and recently-created entities → embed → batched LLM merge. Aliases absorb duplicates, join rows repoint, soft-delete the loser.</p>
+
+    <div class="section-label">Strengths / weaknesses</div>
+    <ul>
+      <li>Type-safe schema per memory/entity type</li>
+      <li>Easy per-type queries without WHERE type filters</li>
+      <li>Coach-specific — no Jarvis reuse</li>
+      <li>Schema migration required per new memory or entity type</li>
+    </ul>
+  </div>
+
+  <!-- =================== COLUMN 2 — COACH RESHAPED =================== -->
+  <div class="col c2">
+    <span class="col-tag">Design 2</span>
+    <h2>Coach reshaped on Jarvis pattern</h2>
+    <p class="lead">3 tables: memory, entity, mapping. Type column distinguishes memory and entity variants. Same information as v2, Jarvis-compatible structure.</p>
+
+    <div class="section-label">Memory table</div>
+
+    <div class="table-name">Coach_memory</div>
+<pre>memory_id        uuid PK
+user_id          uuid FK
+convo_id         uuid FK (nullable)  -- raw transcript
+type             text                -- see below
+content          jsonb               -- type-specific
+reinforced_count int                 -- ++ on dedup
+created_at       timestamp
+last_reinforced  timestamp
+-- update: append-only</pre>
+    <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">meeting_summary</code>, <code class="inline">single_feedback</code>, <code class="inline">personal_fact</code> (user profile fields become individual rows).</p>
+
+    <div class="section-label">Entity table</div>
+
+    <div class="table-name">Coach_entity</div>
+<pre>entity_id        uuid PK
+user_id          uuid FK
+type             text       -- see below
+name             text       -- canonical
+aliases          text[]
+details          jsonb      -- type-specific
+confidence       text
+first_mentioned  timestamp
+last_mentioned   timestamp
+-- update: upsert (resolve by name + aliases)</pre>
+    <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">person</code>, <code class="inline">project</code>, <code class="inline">pattern</code>, <code class="inline">topic</code>.</p>
+
+    <div class="section-label">Mapping table</div>
+
+    <div class="table-name">Coach_memory_entity</div>
+<pre>memory_id  uuid FK
+entity_id  uuid FK
+-- composite PK</pre>
+    <p style="font-size: 12.5px; margin-top: 4px;">Replaces Coach_summary_projects, Coach_summary_people, and Coach_pattern_summaries. One join table for all relationships.</p>
+
+    <div class="section-label">Write semantics</div>
+    <ul>
+      <li><strong>Append-only</strong> on Coach_memory and Coach_memory_entity</li>
+      <li><strong>Upsert</strong> on Coach_entity (by name + aliases, like v2)</li>
+      <li>User profile becomes many <code class="inline">type=personal_fact</code> rows. Old "rewrite" semantics replaced by reinforced_count and the dedup pass.</li>
+    </ul>
+
+    <div class="section-label">Dedup</div>
+    <p>Weekly consolidation pass: for each entity touched in the past week, look at memories tagged to it, find near-duplicates within a type, merge by incrementing reinforced_count. Scope is bounded by the entity neighborhood — same logic as v2's per-table dedup, just unified.</p>
+
+    <div class="section-label">What's preserved from v2</div>
+    <ul>
+      <li><code class="inline">convo_id</code> stays as a column on memory rows where applicable — global join key still works</li>
+      <li>Forward query ("what does meeting X touch?") = filter memory by convo_id, join through mapping</li>
+      <li>Reverse query ("which memories touch entity Y?") = join entity → mapping → memory</li>
+      <li>Aliases, confidence, last_mentioned all carry over</li>
+    </ul>
+
+    <div class="section-label">What changes from v2</div>
+    <ul>
+      <li>Patterns become <code class="inline">type=pattern</code> entities; meetings demonstrating them are tagged via mapping (instead of having their own join table)</li>
+      <li>User profile fields become individual memory rows, consolidated via reinforced_count instead of full rewrite</li>
+      <li>One mapping table replaces three join tables</li>
+      <li>No more schema migrations for new memory/entity types — just add a type value</li>
+    </ul>
+
+    <div class="write-note">
+      <strong>Why this is interesting:</strong> Design 2 is structurally identical to Jarvis (Design 3). Coach and Jarvis can share the same retrieval engine, dedup pipeline, and tagging infrastructure. The data is still per-user — Coach's user_id is just Jarvis's session_id under a different name.
+    </div>
+  </div>
+
+  <!-- =================== COLUMN 3 — JARVIS =================== -->
+  <div class="col c3">
+    <span class="col-tag">Design 3</span>
+    <h2>Jarvis — design</h2>
+    <p class="lead">3 tables: facts, entities, fact-entity mapping. Two-tier entities (domain shared, personal per-learner). End-of-topic consolidation.</p>
+
+    <div class="section-label">Memory table</div>
+
+    <div class="table-name">jarvis_memory_facts</div>
+<pre>fact_id           pk
+session_id        fk
+type              text  -- personal, preference,
+                        --   performance, ...
+content           text
+reinforced_count  int
+last_reinforced   timestamp
+last_updated      timestamp
+source            text[]  -- list of turn IDs
+-- update: append-only</pre>
+
+    <div class="section-label">Entity table</div>
+
+    <div class="table-name">jarvis_memory_entities</div>
+<pre>entity_id  pk
+tier       text  -- "domain" | "personal"
+name       text  -- slug form
+                 --   ("pricing", "guidewire")</pre>
+    <p style="font-size: 12.5px; margin-top: 4px;"><strong>Two tiers:</strong> <code class="inline">domain</code> entities are seeded once per subject (concepts like "pricing", "customer-segmentation") and reused across all learners. <code class="inline">personal</code> entities are proper-noun anchors created per-learner by the LLM ("guidewire", "aaron-team").</p>
+
+    <div class="section-label">Mapping table</div>
+
+    <div class="table-name">jarvis_memory_fact_entities</div>
+<pre>fact_id    fk
+entity_id  fk
+-- composite PK</pre>
+
+    <div class="section-label">Write semantics</div>
+    <ul>
+      <li><strong>Append-only</strong> across all three tables</li>
+      <li>Updates happen only through <strong>reinforced_count</strong> on duplicate detection</li>
+      <li>Consolidation pass can <strong>supersede</strong> old facts ("fact Z replaces fact W; soft-delete W")</li>
+    </ul>
+
+    <div class="section-label">Dedup ("single pass for adding entities and hygiene")</div>
+    <p>Runs at the end of every topic (~5–15 new facts). Single LLM call does three things in one shot:</p>
+    <ul>
+      <li>Tag the new facts with existing entity IDs (or create new personal entities)</li>
+      <li>Merge near-duplicate facts within the entity neighborhood</li>
+      <li>Optionally supersede stale facts</li>
+    </ul>
+    <p>Scope is bounded by <strong>entity neighborhood</strong>: only old facts that share an entity tag with new facts are reconsidered. The catalog of entities itself stays small enough to review in full.</p>
+
+    <div class="section-label">What's distinctive</div>
+    <ul>
+      <li><strong>Topic boundary</strong> as the consolidation trigger (Coach equivalent: end of meeting)</li>
+      <li><strong>Domain/personal tier split</strong> — exploits shared concepts across learners (Coach doesn't really need this, since memory is fully personal per user)</li>
+      <li><strong>Slug-form canonical names</strong> for entities (lowercase, hyphenated) — makes dedup easier</li>
+      <li>Facts hold <code class="inline">source</code> array of turn IDs for traceability (Coach equivalent: <code class="inline">convo_id</code> on memory rows)</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  <h3>How Design 2 maps to Design 1 (the unification, in plain terms)</h3>
+  <p>Design 2 is Design 1 with the typed tables collapsed:</p>
+  <ul>
+    <li><code class="inline">Coach_meeting_summary</code> rows → <code class="inline">Coach_memory</code> rows with <code class="inline">type = "meeting_summary"</code>.</li>
+    <li><code class="inline">Coach_single_meeting_post_feedback</code> rows → <code class="inline">Coach_memory</code> rows with <code class="inline">type = "single_feedback"</code>.</li>
+    <li><code class="inline">Coach_user.user_profile</code> → multiple <code class="inline">Coach_memory</code> rows with <code class="inline">type = "personal_fact"</code> (consolidated by reinforced_count instead of overwritten).</li>
+    <li><code class="inline">Coach_projects</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "project"</code>.</li>
+    <li><code class="inline">Coach_people</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "person"</code>.</li>
+    <li><code class="inline">Coach_pattern</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "pattern"</code>.</li>
+    <li>All three join tables (<code class="inline">Coach_summary_projects</code>, <code class="inline">Coach_summary_people</code>, <code class="inline">Coach_pattern_summaries</code>) → one <code class="inline">Coach_memory_entity</code> mapping table.</li>
+  </ul>
+  <p>No information is lost in the move. Forward and reverse query patterns still work the same way; they just go through the mapping table instead of separate join tables. The trade-off is type-specific column structure (Design 1) versus schema flexibility plus Jarvis alignment (Design 2).</p>
+</div>
+
+</body>
+</html>
