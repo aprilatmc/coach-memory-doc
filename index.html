@@ -173,7 +173,7 @@
   <div class="col c1">
     <span class="col-tag">Design 1</span>
     <h2>Coach v2 — typed tables</h2>
-    <p class="lead">6 entity tables, 3 join tables. Each memory or entity type has its own schema. Mixed write semantics.</p>
+    <p class="lead">6 entity tables, 3 join tables. Each memory or entity type has its own schema.</p>
 
     <div class="section-label">Entity tables</div>
 
@@ -256,24 +256,18 @@ convo_id    uuid FK
     <div class="section-label">Dedup</div>
     <p>Weekly per-table dedup pass: low-confidence and recently-created entities → embed → batched LLM merge. Aliases absorb duplicates, join rows repoint, soft-delete the loser.</p>
 
-    <div class="section-label">Strengths / weaknesses</div>
-    <ul>
-      <li>Type-safe schema per memory/entity type</li>
-      <li>Easy per-type queries without WHERE type filters</li>
-      <li>Coach-specific — no Jarvis reuse</li>
-      <li>Schema migration required per new memory or entity type</li>
-    </ul>
+
   </div>
 
   <!-- =================== COLUMN 2 — COACH RESHAPED =================== -->
   <div class="col c2">
     <span class="col-tag">Design 2</span>
     <h2>Coach reshaped on Jarvis pattern</h2>
-    <p class="lead">3 tables: memory, entity, mapping. Type column distinguishes memory and entity variants. Same information as v2, Jarvis-compatible structure.</p>
+    <p class="lead">3 tables: facts, entity, mapping. Type column distinguishes memory and entity variants.</p>
 
     <div class="section-label">Memory table</div>
 
-    <div class="table-name">Coach_memory</div>
+    <div class="table-name">Coach_memory_facts</div>
 <pre>memory_id        uuid PK
 user_id          uuid FK
 convo_id         uuid FK (nullable)  -- raw transcript
@@ -287,7 +281,7 @@ last_reinforced  timestamp
 
     <div class="section-label">Entity table</div>
 
-    <div class="table-name">Coach_entity</div>
+    <div class="table-name">Coach_entities</div>
 <pre>entity_id        uuid PK
 user_id          uuid FK
 type             text       -- see below
@@ -310,8 +304,8 @@ entity_id  uuid FK
 
     <div class="section-label">Write semantics</div>
     <ul>
-      <li><strong>Append-only</strong> on Coach_memory and Coach_memory_entity</li>
-      <li><strong>Upsert</strong> on Coach_entity (by name + aliases, like v2)</li>
+      <li><strong>Append-only</strong> on Coach_memory_facts and Coach_memory_entity</li>
+      <li><strong>Upsert</strong> on Coach_entities (by name + aliases, like v2)</li>
       <li>User profile becomes many <code class="inline">type=personal_fact</code> rows. Old "rewrite" semantics replaced by reinforced_count and the dedup pass.</li>
     </ul>
 
@@ -331,12 +325,10 @@ entity_id  uuid FK
       <li>Patterns become <code class="inline">type=pattern</code> entities; meetings demonstrating them are tagged via mapping (instead of having their own join table)</li>
       <li>User profile fields become individual memory rows, consolidated via reinforced_count instead of full rewrite</li>
       <li>One mapping table replaces three join tables</li>
-      <li>No more schema migrations for new memory/entity types — just add a type value</li>
+
     </ul>
 
-    <div class="write-note">
-      <strong>Why this is interesting:</strong> Design 2 is structurally identical to Jarvis (Design 3). Coach and Jarvis can share the same retrieval engine, dedup pipeline, and tagging infrastructure. The data is still per-user — Coach's user_id is just Jarvis's session_id under a different name.
-    </div>
+    
   </div>
 
   <!-- =================== COLUMN 3 — JARVIS =================== -->
@@ -406,12 +398,12 @@ entity_id  fk
   <h3>How Design 2 maps to Design 1 (the unification, in plain terms)</h3>
   <p>Design 2 is Design 1 with the typed tables collapsed:</p>
   <ul>
-    <li><code class="inline">Coach_meeting_summary</code> rows → <code class="inline">Coach_memory</code> rows with <code class="inline">type = "meeting_summary"</code>.</li>
-    <li><code class="inline">Coach_single_meeting_post_feedback</code> rows → <code class="inline">Coach_memory</code> rows with <code class="inline">type = "single_feedback"</code>.</li>
-    <li><code class="inline">Coach_user.user_profile</code> → multiple <code class="inline">Coach_memory</code> rows with <code class="inline">type = "personal_fact"</code> (consolidated by reinforced_count instead of overwritten).</li>
-    <li><code class="inline">Coach_projects</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "project"</code>.</li>
-    <li><code class="inline">Coach_people</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "person"</code>.</li>
-    <li><code class="inline">Coach_pattern</code> rows → <code class="inline">Coach_entity</code> rows with <code class="inline">type = "pattern"</code>.</li>
+    <li><code class="inline">Coach_meeting_summary</code> rows → <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "meeting_summary"</code>.</li>
+    <li><code class="inline">Coach_single_meeting_post_feedback</code> rows → <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "single_feedback"</code>.</li>
+    <li><code class="inline">Coach_user.user_profile</code> → multiple <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "personal_fact"</code> (consolidated by reinforced_count instead of overwritten).</li>
+    <li><code class="inline">Coach_projects</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "project"</code>.</li>
+    <li><code class="inline">Coach_people</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "person"</code>.</li>
+    <li><code class="inline">Coach_pattern</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "pattern"</code>.</li>
     <li>All three join tables (<code class="inline">Coach_summary_projects</code>, <code class="inline">Coach_summary_people</code>, <code class="inline">Coach_pattern_summaries</code>) → one <code class="inline">Coach_memory_entity</code> mapping table.</li>
   </ul>
   <p>No information is lost in the move. Forward and reverse query patterns still work the same way; they just go through the mapping table instead of separate join tables. The trade-off is type-specific column structure (Design 1) versus schema flexibility plus Jarvis alignment (Design 2).</p>
