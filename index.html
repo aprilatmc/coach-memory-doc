@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Coach Memory — Three Design Comparison</title>
+<title>Coach Memory — Design Comparison</title>
 <style>
   :root {
     --text: #1f2328;
@@ -30,25 +30,80 @@
     border-bottom: 2px solid var(--border);
     padding-bottom: 12px;
   }
+  h2.section-h2 {
+    font-size: 22px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2.example-h2 {
+    font-size: 18px;
+    margin-top: 36px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent-2);
+  }
+  h3.step-h3 {
+    font-size: 15px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+    color: var(--accent-1);
+  }
   .meta {
     color: var(--muted);
     font-size: 13px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   .intro {
     background: var(--bg-soft);
     border-left: 4px solid var(--accent-1);
     padding: 14px 18px;
-    margin: 0 0 28px;
+    margin: 0 0 20px;
     border-radius: 0 6px 6px 0;
     font-size: 14px;
   }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    align-items: stretch;
+  .archive-note {
+    background: #fff8c5;
+    border-left: 4px solid #bf8700;
+    padding: 12px 16px;
+    margin: 0 0 20px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13.5px;
+    color: #5c4400;
   }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .tab-button {
+    background: none;
+    border: none;
+    padding: 12px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-family: inherit;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .tab-button:hover { color: var(--text); }
+  .tab-button.active {
+    color: var(--accent-1);
+    border-bottom-color: var(--accent-1);
+    font-weight: 600;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .grid-1 { display: block; max-width: 700px; }
   .col {
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -58,8 +113,6 @@
     flex-direction: column;
   }
   .col.c1 { border-top: 4px solid var(--accent-1); }
-  .col.c2 { border-top: 4px solid var(--accent-2); }
-  .col.c3 { border-top: 4px solid var(--accent-3); }
   .col-tag {
     display: inline-block;
     font-size: 10px;
@@ -72,13 +125,11 @@
     color: white;
   }
   .col.c1 .col-tag { background: var(--accent-1); }
-  .col.c2 .col-tag { background: var(--accent-2); }
-  .col.c3 .col-tag { background: var(--accent-3); }
-  .col h2 {
+  .col h2, .dc-cell h2 {
     margin: 0 0 6px;
     font-size: 16px;
   }
-  .col .lead {
+  .col .lead, .dc-cell .lead {
     color: var(--muted);
     font-size: 13px;
     margin: 0 0 14px;
@@ -113,78 +164,157 @@
     border-radius: 3px;
     font-size: 12.5px;
   }
-  .col p {
+  .col p, .dc-cell p {
     margin: 6px 0;
     font-size: 13.5px;
     line-height: 1.5;
   }
-  .col ul {
+  .col ul, .dc-cell ul {
     margin: 6px 0;
     padding-left: 18px;
     font-size: 13.5px;
   }
-  .col li { margin: 3px 0; }
-  .write-note {
-    background: #fff8c5;
-    border-left: 3px solid #bf8700;
-    padding: 8px 10px;
-    border-radius: 0 4px 4px 0;
-    margin: 8px 0;
-    font-size: 12.5px;
-    line-height: 1.45;
-  }
+  .col li, .dc-cell li { margin: 3px 0; }
   .table-name {
     font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
     font-weight: 700;
     font-size: 12.5px;
     margin: 8px 0 2px;
   }
-  hr.softrule {
-    border: none;
-    border-top: 1px dashed var(--border);
-    margin: 16px 0 8px;
+  .example-label {
+    font-size: 11px;
+    color: #9a6700;
+    font-weight: 600;
+    margin: 10px 0 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
   }
-  .footer-note {
-    margin-top: 32px;
-    padding: 16px 20px;
-    background: var(--bg-soft);
-    border-radius: 6px;
-    font-size: 13.5px;
-    color: var(--text);
+  pre.example {
+    background: #fffdf5;
+    border-color: #e5d680;
+    font-size: 12px;
   }
-  .footer-note h3 {
-    margin-top: 0;
-    font-size: 15px;
+
+  /* Row-aligned comparison table for Main tab (Design 2 vs Design 3) */
+  .dc-table {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .dc-section {
+    border-bottom: 1px solid var(--border);
+  }
+  .dc-section:last-child { border-bottom: none; }
+
+  .dc-row-2col {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+  }
+  .dc-cell {
+    padding: 14px 18px;
+    min-width: 0;
+  }
+  .dc-cell-2 {
+    border-right: 1px solid var(--border);
+  }
+
+  /* Headers */
+  .dc-headers .dc-cell-2 {
+    border-top: 4px solid var(--accent-2);
+    background: #faf7ff;
+  }
+  .dc-headers .dc-cell-3 {
+    border-top: 4px solid var(--accent-3);
+    background: #f5fbf7;
+  }
+  .dc-headers .col-tag-2 { background: var(--accent-2); }
+  .dc-headers .col-tag-3 { background: var(--accent-3); }
+  .dc-headers .col-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+  }
+
+  .dc-label {
+    background: #eef2f7;
+    padding: 8px 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .concerns-box {
+    background: #fff8c5;
+    border-left: 4px solid #bf8700;
+    padding: 12px 16px;
+    margin: 14px 0 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 13px;
+    color: #5c4400;
+  }
+  .concerns-box strong { color: #4a3700; }
+
+  /* Retrieval (examples) tab */
+  .retrieval-section p { font-size: 14.5px; }
+  .retrieval-section pre { font-size: 13px; }
+  .retrieval-section pre.sql {
+    background: #f3f6fb;
+    border-color: #bfd3ee;
+  }
+  .retrieval-section pre.result {
+    background: #f4fbf6;
+    border-color: #b6e0c5;
   }
 </style>
 </head>
 <body>
 
-<h1>Coach Memory — Three Design Comparison</h1>
-<div class="meta">April Xu  ·  May 14, 2026  ·  Side-by-side view of Coach v2, Coach reshaped on Jarvis pattern, and Jarvis</div>
+<h1>Coach Memory — Design Comparison</h1>
+<div class="meta">April Xu · evolving doc · last update May 14, 2026</div>
 
 <div class="intro">
-  This compares three live designs side by side: my current Coach v2 (typed tables), Coach reshaped to share three-table pattern (so Coach and Jarvis can run on shared infrastructure), and the actual Jarvis schema. The middle column shows what Coach v2 looks like if we collapse its typed tables into a memory / entity / mapping shape — same information, Jarvis-compatible structure.
+  Three views: the archived v2 design (Coach typed tables, 5/13), the current main comparison between Coach reshaped on the Jarvis pattern and Jarvis itself (5/14), and worked retrieval examples using the Design 2 schema. Tabs below.
 </div>
 
-<div class="grid">
+<div class="tabs" role="tablist">
+  <button class="tab-button" data-tab="archive" role="tab">Archive: Coach v2 (5/13)</button>
+  <button class="tab-button active" data-tab="main" role="tab">Main (5/14)</button>
+  <button class="tab-button" data-tab="examples" role="tab">Examples under Design 2</button>
+</div>
 
-  <!-- =================== COLUMN 1 — COACH V2 =================== -->
-  <div class="col c1">
-    <span class="col-tag">Design 1</span>
-    <h2>Coach v2 — typed tables</h2>
-    <p class="lead">6 entity tables, 3 join tables. Each memory or entity type has its own schema.</p>
+<!-- =================== TAB 1: ARCHIVE — COACH V2 =================== -->
+<div class="tab-content" id="archive" role="tabpanel">
 
-    <div class="section-label">Entity tables</div>
+  <div class="archive-note">
+    <strong>Archived 5/13/2026.</strong> Coach v2 with typed tables — one entity table per type, separate join tables per relationship. Superseded by the unified design on the Main tab.
+  </div>
 
-    <div class="table-name">Coach_user</div>
+  <div class="grid-1">
+    <div class="col c1">
+      <span class="col-tag">Archive: Coach v2 (5/13)</span>
+      <h2>Coach v2 — typed tables</h2>
+      <p class="lead">5 entity tables, 2 join tables. Each memory or entity type has its own schema.</p>
+
+      <div class="section-label">Entity tables</div>
+
+      <div class="table-name">Coach_user</div>
 <pre>user_id        uuid PK
 user_profile   jsonb
 version        int
 updated_at     timestamp
 -- update: rewrite</pre>
 
-    <div class="table-name">Coach_meeting_summary</div>
+      <div class="table-name">Coach_meeting_summary</div>
 <pre>convo_id          uuid PK, FK→transcript
 user_id           uuid FK
 meeting_summary   jsonb  -- {summary, action_items,
@@ -192,7 +322,7 @@ meeting_summary   jsonb  -- {summary, action_items,
 created_at        timestamp
 -- update: append-only</pre>
 
-    <div class="table-name">Coach_projects</div>
+      <div class="table-name">Coach_projects</div>
 <pre>proj_id          uuid PK
 user_id          uuid FK
 name             text
@@ -203,7 +333,7 @@ first_mentioned  timestamp
 last_mentioned   timestamp
 -- update: upsert</pre>
 
-    <div class="table-name">Coach_people</div>
+      <div class="table-name">Coach_people</div>
 <pre>person_id        uuid PK
 user_id          uuid FK
 name             text
@@ -214,60 +344,66 @@ first_mentioned  timestamp
 last_mentioned   timestamp
 -- update: upsert</pre>
 
-    <div class="table-name">Coach_single_meeting_post_feedback</div>
+      <div class="table-name">Coach_single_meeting_post_feedback</div>
 <pre>convo_id    uuid PK, FK
 user_id     uuid FK
 feedback    jsonb
 created_at  timestamp
 -- update: append-only</pre>
 
-    <div class="table-name">Coach_pattern</div>
-<pre>pattern_id      uuid PK
-user_id         uuid FK
-pattern         jsonb
-first_observed  timestamp
-last_observed   timestamp
--- update: upsert</pre>
+      <div class="section-label">Join tables</div>
 
-    <div class="section-label">Join tables</div>
-
-    <div class="table-name">Coach_summary_projects</div>
+      <div class="table-name">Coach_summary_projects</div>
 <pre>convo_id  uuid FK
 proj_id   uuid FK
 -- composite PK</pre>
 
-    <div class="table-name">Coach_summary_people</div>
+      <div class="table-name">Coach_summary_people</div>
 <pre>convo_id   uuid FK
 person_id  uuid FK
 -- composite PK</pre>
 
-    <div class="table-name">Coach_pattern_summaries</div>
-<pre>pattern_id  uuid FK
-convo_id    uuid FK
--- composite PK</pre>
+      <div class="section-label">Write semantics</div>
+      <ul>
+        <li><strong>Append-only:</strong> meeting summaries, post-feedback</li>
+        <li><strong>Upsert:</strong> projects, people</li>
+        <li><strong>Rewrite:</strong> user profile</li>
+      </ul>
 
-    <div class="section-label">Write semantics</div>
-    <ul>
-      <li><strong>Append-only:</strong> meeting summaries, post-feedback</li>
-      <li><strong>Upsert:</strong> projects, people, patterns</li>
-      <li><strong>Rewrite:</strong> user profile</li>
-    </ul>
-
-    <div class="section-label">Dedup</div>
-    <p>Weekly per-table dedup pass: low-confidence and recently-created entities → embed → batched LLM merge. Aliases absorb duplicates, join rows repoint, soft-delete the loser.</p>
-
-
+      <div class="section-label">Dedup</div>
+      <p>Weekly per-table dedup pass: low-confidence and recently-created entities → embed → batched LLM merge. Aliases absorb duplicates, join rows repoint, soft-delete the loser.</p>
+    </div>
   </div>
 
-  <!-- =================== COLUMN 2 — COACH RESHAPED =================== -->
-  <div class="col c2">
-    <span class="col-tag">Design 2</span>
-    <h2>Coach reshaped on Jarvis pattern</h2>
-    <p class="lead">3 tables: facts, entity, mapping. Type column distinguishes memory and entity variants.</p>
+</div>
 
-    <div class="section-label">Memory table</div>
+<!-- =================== TAB 2: MAIN — DESIGN 2 + DESIGN 3 =================== -->
+<div class="tab-content active" id="main" role="tabpanel">
 
-    <div class="table-name">Coach_memory_facts</div>
+  <div class="dc-table">
+
+    <!-- Headers -->
+    <div class="dc-section dc-headers">
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <span class="col-tag col-tag-2">Design 2</span>
+          <h2>Coach reshaped on Jarvis pattern</h2>
+          <p class="lead">3 tables: facts, entities, mapping. Type column distinguishes memory and entity variants.</p>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <span class="col-tag col-tag-3">Design 3</span>
+          <h2>Jarvis — design</h2>
+          <p class="lead">3 tables: facts, entities, fact-entity mapping. Two-tier entities (domain shared, personal per-learner). End-of-topic consolidation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MEMORY TABLE ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Memory table</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <div class="table-name">Coach_memory_facts</div>
 <pre>memory_id        uuid PK
 user_id          uuid FK
 convo_id         uuid FK (nullable)  -- raw transcript
@@ -277,11 +413,64 @@ reinforced_count int                 -- ++ on dedup
 created_at       timestamp
 last_reinforced  timestamp
 -- update: append-only</pre>
-    <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">meeting_summary</code>, <code class="inline">single_feedback</code>, <code class="inline">personal_fact</code> (user profile fields become individual rows).</p>
+          <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">meeting_summary</code>, <code class="inline">single_feedback</code>, <code class="inline">personal_fact</code>.</p>
 
-    <div class="section-label">Entity table</div>
+          <div class="example-label">Example rows</div>
+<pre class="example">memory_id | user_id  | convo_id   | type             | content
+─────────────────────────────────────────────────────────────────────────────
+mf_001    | u_april  | convo_001  | meeting_summary  | { summary: "Reviewed CERT
+                                                         data quality with Sam...",
+                                                         action_items: ["Sam to
+                                                         investigate missing data"] }
+mf_002    | u_april  | convo_001  | single_feedback  | { key_takeaway: "April
+                                                         played devil's advocate
+                                                         on UX", pillar: "Engage" }
+mf_003    | u_april  | (null)     | personal_fact    | { fact: "April leads the
+                                                         AI/ML team" }
+mf_004    | u_april  | convo_002  | meeting_summary  | { summary: "Standup: walked
+                                                         through Q2 OKR plans..." }</pre>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <div class="table-name">jarvis_memory_facts</div>
+<pre>id                pk
+user_id           fk
+schema_version    text
+memory_type       text  -- personal, preference,
+                        --   performance, ...
+deleted_at        timestamp (nullable)
+last_reinforced   timestamp
+created_at        timestamp
+updated_at        timestamp
+memory_data       jsonb
+-- update: append-only</pre>
+          <p style="font-size: 12.5px; margin-top: 4px;">The JSONB <code class="inline">memory_data</code> carries <code class="inline">content</code>, <code class="inline">category</code>, <code class="inline">source_refs</code>, <code class="inline">module_id</code>, <code class="inline">topic_id</code>, <code class="inline">tags</code>, <code class="inline">reinforced_count</code>, etc.</p>
 
-    <div class="table-name">Coach_entities</div>
+          <div class="example-label">Example row</div>
+<pre class="example">id    | user_id | memory_type | last_reinforced  | memory_data
+──────────────────────────────────────────────────────────────────────
+98231 | 4567    | preference  | 2026-05-07       | { content: "Learner prefers
+                                                     scenario-based practice
+                                                     before abstract summaries",
+                                                     category: "practice_style",
+                                                     source_refs: ["msg-123",
+                                                                   "msg-128"],
+                                                     module_id: "strategy-market-
+                                                                 foundations",
+                                                     topic_id: "market-positioning",
+                                                     tags: ["examples",
+                                                            "scaffolding"],
+                                                     is_mutable: true,
+                                                     reinforced_count: 1 }</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ENTITY TABLE ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Entity table</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <div class="table-name">Coach_entities</div>
 <pre>entity_id        uuid PK
 user_id          uuid FK
 type             text       -- see below
@@ -292,122 +481,380 @@ confidence       text
 first_mentioned  timestamp
 last_mentioned   timestamp
 -- update: upsert (resolve by name + aliases)</pre>
-    <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">person</code>, <code class="inline">project</code>, <code class="inline">pattern</code>, <code class="inline">topic</code>.</p>
+          <p style="font-size: 12.5px; margin-top: 4px;"><strong>type</strong> values: <code class="inline">person</code>, <code class="inline">project</code>, <code class="inline">topic</code>.</p>
 
-    <div class="section-label">Mapping table</div>
+          <div class="example-label">Example rows — all owned by u_april</div>
+<pre class="example">entity_id | type    | name                | aliases          | confidence
+──────────────────────────────────────────────────────────────────────────────
+e_008     | person  | Alex                | ["Alex Garcia"]  | high
+   details: { role: "Data Scientist", relationship: "peer", ... }
 
-    <div class="table-name">Coach_memory_entity</div>
+e_018     | person  | Sam                 | []               | medium
+   details: { role: "Data Engineer" }
+
+e_005     | project | CERT Creative…      | ["CERT"]         | high
+   details: { status: "active", desc: "Agentic pipeline..." }
+
+e_001     | project | Coach Memory        | []               | high
+   details: { status: "active" }</pre>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <div class="table-name">jarvis_memory_entities</div>
+<pre>entity_id   pk
+user_id     fk    -- owner (per-learner)
+tier        text  -- "domain" | "personal"
+name        text  -- slug form
+                  --   ("pricing", "guidewire")</pre>
+          <p style="font-size: 12.5px; margin-top: 4px;"><strong>Two tiers:</strong> <code class="inline">domain</code> = seeded concepts ("pricing", "customer-segmentation"). <code class="inline">personal</code> = proper-noun anchors created per-learner ("guidewire", "aaron-team").</p>
+
+          <div class="example-label">Example rows</div>
+<pre class="example">entity_id | user_id | tier     | name
+──────────────────────────────────────────────────
+10        | (null)  | domain   | pricing
+11        | (null)  | domain   | customer-segmentation
+50        | 4567    | personal | guidewire
+51        | 4567    | personal | aaron-team</pre>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MAPPING TABLE ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Mapping table</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <div class="table-name">Coach_memory_entity</div>
 <pre>memory_id  uuid FK
 entity_id  uuid FK
 -- composite PK</pre>
-    <p style="font-size: 12.5px; margin-top: 4px;">Replaces Coach_summary_projects, Coach_summary_people, and Coach_pattern_summaries. One join table for all relationships.</p>
+          <p style="font-size: 12.5px; margin-top: 4px;">Replaces the per-relationship join tables from Archive: Coach v2 (5/13) with a single polymorphic join.</p>
 
-    <div class="section-label">Write semantics</div>
-    <ul>
-      <li><strong>Append-only</strong> on Coach_memory_facts and Coach_memory_entity</li>
-      <li><strong>Upsert</strong> on Coach_entities (by name + aliases, like v2)</li>
-      <li>User profile becomes many <code class="inline">type=personal_fact</code> rows. Old "rewrite" semantics replaced by reinforced_count and the dedup pass.</li>
-    </ul>
-
-    <div class="section-label">Dedup</div>
-    <p>Weekly consolidation pass: for each entity touched in the past week, look at memories tagged to it, find near-duplicates within a type, merge by incrementing reinforced_count. Scope is bounded by the entity neighborhood — same logic as v2's per-table dedup, just unified.</p>
-
-    <div class="section-label">What's preserved from v2</div>
-    <ul>
-      <li><code class="inline">convo_id</code> stays as a column on memory rows where applicable — global join key still works</li>
-      <li>Forward query ("what does meeting X touch?") = filter memory by convo_id, join through mapping</li>
-      <li>Reverse query ("which memories touch entity Y?") = join entity → mapping → memory</li>
-      <li>Aliases, confidence, last_mentioned all carry over</li>
-    </ul>
-
-    <div class="section-label">What changes from v2</div>
-    <ul>
-      <li>Patterns become <code class="inline">type=pattern</code> entities; meetings demonstrating them are tagged via mapping (instead of having their own join table)</li>
-      <li>User profile fields become individual memory rows, consolidated via reinforced_count instead of full rewrite</li>
-      <li>One mapping table replaces three join tables</li>
-
-    </ul>
-
-    
-  </div>
-
-  <!-- =================== COLUMN 3 — JARVIS =================== -->
-  <div class="col c3">
-    <span class="col-tag">Design 3</span>
-    <h2>Jarvis — design</h2>
-    <p class="lead">3 tables: facts, entities, fact-entity mapping. Two-tier entities (domain shared, personal per-learner). End-of-topic consolidation.</p>
-
-    <div class="section-label">Memory table</div>
-
-    <div class="table-name">jarvis_memory_facts</div>
-<pre>fact_id           pk
-session_id        fk
-type              text  -- personal, preference,
-                        --   performance, ...
-content           text
-reinforced_count  int
-last_reinforced   timestamp
-last_updated      timestamp
-source            text[]  -- list of turn IDs
--- update: append-only</pre>
-
-    <div class="section-label">Entity table</div>
-
-    <div class="table-name">jarvis_memory_entities</div>
-<pre>entity_id  pk
-tier       text  -- "domain" | "personal"
-name       text  -- slug form
-                 --   ("pricing", "guidewire")</pre>
-    <p style="font-size: 12.5px; margin-top: 4px;"><strong>Two tiers:</strong> <code class="inline">domain</code> entities are seeded once per subject (concepts like "pricing", "customer-segmentation") and reused across all learners. <code class="inline">personal</code> entities are proper-noun anchors created per-learner by the LLM ("guidewire", "aaron-team").</p>
-
-    <div class="section-label">Mapping table</div>
-
-    <div class="table-name">jarvis_memory_fact_entities</div>
+          <div class="example-label">Example rows</div>
+<pre class="example">memory_id | entity_id
+──────────────────────────
+mf_001    | e_005     -- the CERT data-quality meeting touches CERT
+mf_001    | e_008     -- ...and Alex was there
+mf_001    | e_018     -- ...and Sam was there
+mf_002    | e_005     -- the feedback row also references CERT
+mf_002    | e_008     -- ...and Alex
+mf_004    | e_001     -- the standup touched Coach Memory
+mf_004    | e_008     -- ...and Alex was in it</pre>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <div class="table-name">jarvis_memory_fact_entities</div>
 <pre>fact_id    fk
 entity_id  fk
 -- composite PK</pre>
 
-    <div class="section-label">Write semantics</div>
-    <ul>
-      <li><strong>Append-only</strong> across all three tables</li>
-      <li>Updates happen only through <strong>reinforced_count</strong> on duplicate detection</li>
-      <li>Consolidation pass can <strong>supersede</strong> old facts ("fact Z replaces fact W; soft-delete W")</li>
-    </ul>
+          <div class="example-label">Example rows</div>
+<pre class="example">fact_id | entity_id
+─────────────────────────────
+1       | 50         -- about Guidewire
+2       | 51         -- about aaron-team
+4       | 10         -- about pricing
+4       | 50         -- ...and also Guidewire</pre>
+          <p style="font-size: 12.5px; margin-top: 4px;">Fact 4 is now reachable from both <code class="inline">pricing</code> and <code class="inline">guidewire</code>.</p>
+        </div>
+      </div>
+    </div>
 
-    <div class="section-label">Dedup ("single pass for adding entities and hygiene")</div>
-    <p>Runs at the end of every topic (~5–15 new facts). Single LLM call does three things in one shot:</p>
-    <ul>
-      <li>Tag the new facts with existing entity IDs (or create new personal entities)</li>
-      <li>Merge near-duplicate facts within the entity neighborhood</li>
-      <li>Optionally supersede stale facts</li>
-    </ul>
-    <p>Scope is bounded by <strong>entity neighborhood</strong>: only old facts that share an entity tag with new facts are reconsidered. The catalog of entities itself stays small enough to review in full.</p>
+    <!-- ============ WRITE SEMANTICS ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Write semantics</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <ul>
+            <li><strong>Append-only</strong> on Coach_memory_facts and Coach_memory_entity</li>
+            <li><strong>Upsert</strong> on Coach_entities (by name + aliases)</li>
+            <li>User profile becomes many <code class="inline">type=personal_fact</code> rows.</li>
+          </ul>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <ul>
+            <li><strong>Append-only</strong> across all three tables</li>
+            <li>Updates happen only through <strong>reinforced_count</strong> on duplicate detection</li>
+            <li>Consolidation pass can <strong>supersede</strong> old facts ("fact Z replaces fact W; soft-delete W")</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-    <div class="section-label">What's distinctive</div>
-    <ul>
-      <li><strong>Topic boundary</strong> as the consolidation trigger (Coach equivalent: end of meeting)</li>
-      <li><strong>Domain/personal tier split</strong> — exploits shared concepts across learners (Coach doesn't really need this, since memory is fully personal per user)</li>
-      <li><strong>Slug-form canonical names</strong> for entities (lowercase, hyphenated) — makes dedup easier</li>
-      <li>Facts hold <code class="inline">source</code> array of turn IDs for traceability (Coach equivalent: <code class="inline">convo_id</code> on memory rows)</li>
-    </ul>
+    <!-- ============ DEDUP ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Dedup</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <p>Weekly consolidation pass: for each entity touched in the past week, look at memories tagged to it, find near-duplicates within a type, merge by incrementing reinforced_count. Scope is bounded by the entity neighborhood.</p>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <p><strong>Single pass at end of every topic</strong> (~5–15 new facts). One LLM call does three things:</p>
+          <ul>
+            <li>Tag new facts with existing entity IDs (or create new personal entities)</li>
+            <li>Merge near-duplicate facts within the entity neighborhood</li>
+            <li>Optionally supersede stale facts</li>
+          </ul>
+          <p>Scope bounded by <strong>entity neighborhood</strong>: only old facts that share an entity tag with new facts are reconsidered.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ NOTES ============ -->
+    <div class="dc-section">
+      <div class="dc-label">Notes</div>
+      <div class="dc-row-2col">
+        <div class="dc-cell dc-cell-2">
+          <p style="font-weight: 600; margin-top: 0;">What's preserved from Archive: Coach v2 (5/13)</p>
+          <ul>
+            <li><code class="inline">convo_id</code> stays as a column on memory rows — global join key still works</li>
+            <li>Forward query ("what does meeting X touch?") = filter memory by convo_id, join through mapping</li>
+            <li>Reverse query ("which memories touch entity Y?") = join entity → mapping → memory</li>
+            <li>Aliases, confidence, last_mentioned all carry over</li>
+          </ul>
+          <p style="font-weight: 600;">What changes from Archive: Coach v2 (5/13)</p>
+          <ul>
+            <li>User profile fields become individual memory rows, consolidated via reinforced_count instead of full rewrite</li>
+            <li>One mapping table replaces multiple join tables</li>
+            <li>Adding a new memory type or entity type is a new <code class="inline">type</code> value, not a new table</li>
+          </ul>
+        </div>
+        <div class="dc-cell dc-cell-3">
+          <p style="font-weight: 600; margin-top: 0;">What's distinctive about Jarvis</p>
+          <ul>
+            <li><strong>Topic boundary</strong> as the consolidation trigger (Coach equivalent: end of meeting)</li>
+            <li><strong>Domain/personal tier split</strong> — shared concepts seeded per subject; Coach doesn't need this since memory is fully personal per user</li>
+            <li><strong>Slug-form canonical names</strong> for entities — makes dedup easier</li>
+            <li>Facts hold <code class="inline">source</code> array of turn IDs (Coach equivalent: <code class="inline">convo_id</code> on memory rows)</li>
+            <li><code class="inline">schema_version</code> typed column for migration tracking — Coach doesn't have this</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
 
-<div class="footer-note">
-  <h3>How Design 2 maps to Design 1 (the unification, in plain terms)</h3>
-  <p>Design 2 is Design 1 with the typed tables collapsed:</p>
-  <ul>
-    <li><code class="inline">Coach_meeting_summary</code> rows → <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "meeting_summary"</code>.</li>
-    <li><code class="inline">Coach_single_meeting_post_feedback</code> rows → <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "single_feedback"</code>.</li>
-    <li><code class="inline">Coach_user.user_profile</code> → multiple <code class="inline">Coach_memory_facts</code> rows with <code class="inline">type = "personal_fact"</code> (consolidated by reinforced_count instead of overwritten).</li>
-    <li><code class="inline">Coach_projects</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "project"</code>.</li>
-    <li><code class="inline">Coach_people</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "person"</code>.</li>
-    <li><code class="inline">Coach_pattern</code> rows → <code class="inline">Coach_entities</code> rows with <code class="inline">type = "pattern"</code>.</li>
-    <li>All three join tables (<code class="inline">Coach_summary_projects</code>, <code class="inline">Coach_summary_people</code>, <code class="inline">Coach_pattern_summaries</code>) → one <code class="inline">Coach_memory_entity</code> mapping table.</li>
-  </ul>
-  <p>No information is lost in the move. Forward and reverse query patterns still work the same way; they just go through the mapping table instead of separate join tables. The trade-off is type-specific column structure (Design 1) versus schema flexibility plus Jarvis alignment (Design 2).</p>
+<!-- =================== TAB 3: EXAMPLES — RETRIEVAL =================== -->
+<div class="tab-content" id="examples" role="tabpanel">
+
+  <div class="retrieval-section">
+
+    <h2 class="section-h2">Retrieval examples (Design 2)</h2>
+    <p style="margin-top: 4px;">Two worked examples showing how to assemble memory context using the Design 2 schema: one for <strong>pre-meeting prep</strong> (calendar event known, transcript not yet), one for <strong>post-meeting coaching feedback</strong> (transcript just landed).</p>
+
+    <!-- ============ EXAMPLE 1: PRE-MEETING PREP ============ -->
+    <h2 class="example-h2">Example 1 — Pre-meeting context</h2>
+
+    <p>
+      <strong>Scenario:</strong> April is about to join a meeting with Alex and Sam, titled
+      <em>"CERT Creative Performance Review"</em>. She wants three things in her prep:
+      (a) participant details (role, title); (b) past meeting summaries relevant to this meeting;
+      (c) project candidates relevant to the participants.
+    </p>
+
+    <p><strong>Inputs available from calendar:</strong></p>
+<pre>user_id        = u_april
+participants   = ["Alex", "Sam"]
+meeting_title  = "CERT Creative Performance Review"</pre>
+
+    <h3 class="step-h3">Step 1 — Resolve participants to entity_ids</h3>
+    <p>Look up the participant names in <code class="inline">Coach_entities</code>, matching against <code class="inline">name</code> and <code class="inline">aliases</code>:</p>
+<pre class="sql">SELECT entity_id, name, details
+FROM Coach_entities
+WHERE user_id = 'u_april'
+  AND type    = 'person'
+  AND (name IN ('Alex', 'Sam')
+       OR aliases &amp;&amp; ARRAY['Alex', 'Sam']);</pre>
+    <p>Returns:</p>
+<pre class="result">entity_id | name | details
+e_008     | Alex | { role: "Data Scientist", title: "Sr.", ... }
+e_018     | Sam  | { role: "Data Engineer", ... }</pre>
+    <p>That covers <strong>ask #1</strong> — participant details, directly from the entity rows.</p>
+
+    <h3 class="step-h3">Step 2 — Extract project entity from the meeting title</h3>
+<pre class="sql">SELECT entity_id, name, details
+FROM Coach_entities
+WHERE user_id = 'u_april'
+  AND type    = 'project'
+  AND (name ILIKE '%CERT%' OR aliases &amp;&amp; ARRAY['CERT']);</pre>
+    <p>Returns <code class="inline">e_005</code> (CERT Creative Performance Agent). Seed entity set: <code class="inline">{e_008, e_018, e_005}</code>.</p>
+
+    <h3 class="step-h3">Step 3 — Pull past meeting summaries relevant to this meeting</h3>
+<pre class="sql">SELECT DISTINCT mf.memory_id, mf.convo_id, mf.content, mf.created_at
+FROM Coach_memory_facts mf
+JOIN Coach_memory_entity me ON mf.memory_id = me.memory_id
+WHERE mf.user_id = 'u_april'
+  AND mf.type    = 'meeting_summary'
+  AND me.entity_id IN ('e_008', 'e_018', 'e_005')
+ORDER BY mf.created_at DESC
+LIMIT 10;</pre>
+    <p>Returns the most recent ~10 meeting summaries touching Alex, Sam, or CERT. Covers <strong>ask #2</strong>.</p>
+
+    <h3 class="step-h3">Step 4 — Pull project candidates relevant to the participants</h3>
+<pre class="sql">SELECT DISTINCT e.entity_id, e.name, e.details, COUNT(*) AS frequency
+FROM Coach_entities e
+JOIN Coach_memory_entity me_proj ON e.entity_id = me_proj.entity_id
+JOIN Coach_memory_facts  mf      ON me_proj.memory_id = mf.memory_id
+WHERE e.user_id = 'u_april'
+  AND e.type    = 'project'
+  AND mf.type   = 'meeting_summary'
+  AND mf.memory_id IN (
+    SELECT me2.memory_id
+    FROM Coach_memory_entity me2
+    WHERE me2.entity_id IN ('e_008', 'e_018')
+  )
+GROUP BY e.entity_id, e.name, e.details
+ORDER BY frequency DESC
+LIMIT 5;</pre>
+    <p>Returns top 5 projects ranked by how often they co-occur with Alex or Sam. Covers <strong>ask #3</strong>.</p>
+
+    <h3 class="step-h3">Step 5 — Assemble and hand to the LLM</h3>
+<pre class="result">{
+  "participants": [
+    { "name": "Alex", "role": "Data Scientist", "title": "Sr." },
+    { "name": "Sam",  "role": "Data Engineer" }
+  ],
+  "relevant_past_meetings": [
+    { "date": "2026-05-04", "summary": "...", "action_items": [...] },
+    { "date": "2026-04-29", "summary": "...", "action_items": [...] }
+  ],
+  "relevant_projects": [
+    { "name": "CERT Creative Performance Agent", "status": "active", "details": "..." },
+    { "name": "Coach Memory", "status": "active", "details": "..." }
+  ]
+}</pre>
+
+    <!-- ============ EXAMPLE 2: POST-MEETING FEEDBACK ============ -->
+    <h2 class="example-h2">Example 2 — Post-meeting coaching feedback</h2>
+
+    <p>
+      <strong>Scenario:</strong> April just finished a 1:1 with Alex about CERT (<code class="inline">convo_005</code>). The transcript is available and meeting-summary extraction has already run, so the meeting's entities are tagged in <code class="inline">Coach_memory_entity</code>. We want to generate post-meeting coaching feedback that's tailored to April using past context — past meetings on the same topics, other projects she's worked on with the same people, and her own personal facts for personalization.
+    </p>
+
+    <p><strong>Inputs:</strong></p>
+<pre>user_id        = u_april
+convo_id       = convo_005   -- the meeting that just ended
+                              -- transcript already extracted; meeting_summary
+                              -- row mf_010 already written, with entity tags
+                              -- in Coach_memory_entity</pre>
+
+    <h3 class="step-h3">Step 1 — Get the entities the just-finished meeting touched</h3>
+    <p>The meeting summary's mapping rows already exist (written during extraction). Read them back:</p>
+<pre class="sql">SELECT e.entity_id, e.type, e.name, e.details
+FROM Coach_memory_entity me
+JOIN Coach_entities e ON me.entity_id = e.entity_id
+WHERE me.memory_id IN (
+  SELECT memory_id
+  FROM Coach_memory_facts
+  WHERE user_id = 'u_april'
+    AND convo_id = 'convo_005'
+    AND type    = 'meeting_summary'
+);</pre>
+    <p>Returns: <code class="inline">e_008 (Alex)</code>, <code class="inline">e_005 (CERT)</code>. Seed entity set for retrieval.</p>
+
+    <h3 class="step-h3">Step 2 — Pull related past meeting summaries (excluding this one)</h3>
+<pre class="sql">SELECT DISTINCT mf.memory_id, mf.convo_id, mf.content, mf.created_at
+FROM Coach_memory_facts mf
+JOIN Coach_memory_entity me ON mf.memory_id = me.memory_id
+WHERE mf.user_id = 'u_april'
+  AND mf.type    = 'meeting_summary'
+  AND mf.convo_id &lt;&gt; 'convo_005'     -- exclude the just-finished meeting
+  AND me.entity_id IN ('e_008', 'e_005')
+ORDER BY mf.created_at DESC
+LIMIT 5;</pre>
+    <p>Returns earlier meetings about Alex or CERT — useful background that the feedback LLM can reference (e.g., "compared to last week's CERT sync, your tone today was more direct...").</p>
+
+    <h3 class="step-h3">Step 3 — Pull other projects April worked on with Alex (one-hop expansion)</h3>
+<pre class="sql">SELECT DISTINCT e.entity_id, e.name, e.details
+FROM Coach_entities e
+JOIN Coach_memory_entity me_proj ON e.entity_id = me_proj.entity_id
+WHERE e.user_id = 'u_april'
+  AND e.type    = 'project'
+  AND e.entity_id &lt;&gt; 'e_005'         -- exclude the current project
+  AND me_proj.memory_id IN (
+    -- meetings that touched Alex
+    SELECT memory_id FROM Coach_memory_entity
+    WHERE entity_id = 'e_008'
+  );</pre>
+    <p>Returns other projects April has collaborated with Alex on. Lets feedback reference cross-project context ("Alex was also your collaborator on Coach Memory; your dynamic here mirrors that pattern...").</p>
+
+    <h3 class="step-h3">Step 4 — Pull personal facts about April for personalization</h3>
+<pre class="sql">SELECT memory_id, content
+FROM Coach_memory_facts
+WHERE user_id = 'u_april'
+  AND type    = 'personal_fact'
+ORDER BY reinforced_count DESC
+LIMIT 10;</pre>
+    <p>Returns April's stable self-context (role, communication style, goals) — feedback can be tuned to her, not generic.</p>
+
+    <h3 class="step-h3">Step 5 — Assemble the feedback prompt context</h3>
+<pre class="result">{
+  "current_meeting": {
+    "convo_id": "convo_005",
+    "summary": "1:1 with Alex on CERT data quality issues...",
+    "action_items": ["April to check with Matti on Microsoft data",
+                     "Alex to re-run pattern extraction by Friday"],
+    "raw_transcript": "..."   // raw transcript also passed
+  },
+  "user_context": [
+    "April leads the AI/ML team",
+    "April values direct, evidence-based communication",
+    "April has been working on memory architecture this quarter"
+  ],
+  "related_past_meetings_with_alex_or_cert": [
+    { "date": "2026-05-04", "summary": "Earlier CERT data quality discussion...",
+      "action_items": ["..."] },
+    { "date": "2026-04-29", "summary": "...", "action_items": ["..."] }
+  ],
+  "other_projects_with_alex": [
+    { "name": "Coach Memory", "status": "active",
+      "details": "Memory system overhaul..." }
+  ]
+}</pre>
+    <p>This bundle goes to the feedback-generation LLM along with the raw transcript. The LLM produces coaching feedback that knows April, references the specific people and projects involved, and connects today's behavior to longer arcs in her work.</p>
+
+    <h3 class="step-h3">The pattern in plain terms</h3>
+    <p>Both examples follow the same four moves:</p>
+    <ul style="font-size: 14.5px;">
+      <li><strong>Seed</strong>: turn whatever you have (calendar attendees, just-finished convo_id) into a set of entity_ids.</li>
+      <li><strong>Walk</strong>: join through <code class="inline">Coach_memory_entity</code> to find memories tagged with those entities — or join the other direction to find other entities co-occurring with those memories.</li>
+      <li><strong>Rank</strong>: by recency, frequency, or entity-overlap count.</li>
+      <li><strong>Hydrate</strong>: pull the full content from <code class="inline">Coach_memory_facts</code> or <code class="inline">Coach_entities</code>.</li>
+    </ul>
+    <p>Different scenarios feed different seeds and rank by different criteria. The schema and the join shape are constant.</p>
+
+  </div>
+
 </div>
+
+<script>
+  (function() {
+    var buttons = document.querySelectorAll('.tab-button');
+    var contents = document.querySelectorAll('.tab-content');
+
+    function activate(tabId) {
+      buttons.forEach(function(b) {
+        b.classList.toggle('active', b.dataset.tab === tabId);
+      });
+      contents.forEach(function(c) {
+        c.classList.toggle('active', c.id === tabId);
+      });
+      history.replaceState(null, '', '#' + tabId);
+    }
+
+    buttons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        activate(btn.dataset.tab);
+      });
+    });
+
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) {
+      activate(hash);
+    }
+  })();
+</script>
 
 </body>
 </html>
